@@ -11,6 +11,7 @@ import {
   setDoc,
   deleteDoc,
   getDoc,
+
 } from 'firebase/firestore'
 
 const style = {
@@ -33,6 +34,10 @@ export default function Home() {
   const [inventory, setInventory] = useState([])
   const [open, setOpen] = useState(false)
   const [itemName, setItemName] = useState('')
+  const [searchQuery, setSearchQuery] = useState(""); 
+  const filteredSearch = inventory.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const updateInventory = async () => {
     const snapshot = query(collection(firestore, 'inventory'))
@@ -98,7 +103,7 @@ export default function Home() {
           </Typography>
           <Stack width="100%" direction={'row'} spacing={2}>
             <TextField
-              id="outlined-basic"
+              id="search-bar"
               label="Item"
               variant="outlined"
               fullWidth
@@ -122,6 +127,13 @@ export default function Home() {
         Add New Item
       </Button>
       <Box border={'1px solid #333'}>
+      <TextField
+            variant="outlined"
+            placeholder="Search items..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            sx={{ width: "800px" }}
+          />
         <Box
           width="800px"
           height="100px"
@@ -135,7 +147,7 @@ export default function Home() {
           </Typography>
         </Box>
         <Stack width="800px" height="300px" spacing={2} overflow={'auto'}>
-          {inventory.map(({name, quantity}) => (
+          {filteredSearch.map(({name, quantity}) => (
             <Box
               key={name}
               width="100%"
